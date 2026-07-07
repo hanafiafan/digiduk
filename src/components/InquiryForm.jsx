@@ -90,7 +90,7 @@ export default function InquiryForm() {
   }
 
   return (
-    <section className="inquiry section" id="inquiry" ref={ref}>
+    <section className="inquiry section" id="inquiry" ref={ref} style={{ paddingTop: '120px' }}>
       <div className="container">
         <div className="pricing__header" style={{ textAlign: 'center' }}>
           <h2 className="text-headline reveal" style={{ margin: '0 auto' }}>

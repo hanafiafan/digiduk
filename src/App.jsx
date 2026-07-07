@@ -53,7 +53,6 @@ export default function App() {
         </DepthScrollContainer>
       </main>
 
-      <Footer style={{ display: 'none' }} /> {/* Rendered inside DepthScrollContainer instead */}
       <ProposalModeToggle />
     </ProposalModeProvider>
   )

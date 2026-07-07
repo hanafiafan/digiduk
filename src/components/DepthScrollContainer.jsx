@@ -39,19 +39,14 @@ function interpolateColor(color1, color2, factor) {
 export default function DepthScrollContainer({ children }) {
   const containerRef = useRef(null)
   const listRef = useRef([])
-  const [spacerHeight, setSpacerHeight] = useState(0)
+  const gridRef = useRef(null)
 
   // Flatten nested children arrays so nested loops (like map) register correctly as separate sections
   const flatChildren = Children.toArray(children)
 
   useEffect(() => {
-    // Spacer height is determined by the number of sections
-    // 1000px height allocated per section transitions
-    setSpacerHeight(flatChildren.length * 1000)
-  }, [flatChildren])
-
-  useEffect(() => {
     let ticking = false
+    let lastActiveIdx = -1
 
     const handleScroll = () => {
       if (!ticking) {
@@ -62,13 +57,40 @@ export default function DepthScrollContainer({ children }) {
 
     const updateTransforms = () => {
       const scrollY = window.scrollY
+      const viewportHeight = window.innerHeight
+      const scrollCenter = scrollY + viewportHeight * 0.5
       const numSections = flatChildren.length
 
-      // 1. Calculate color interpolation
-      const exactIndex = scrollY / 1000
-      const activeIdx = Math.floor(exactIndex)
-      const factor = exactIndex - activeIdx
+      // 1. Determine active index and factor based on getBoundingClientRect
+      let activeIdx = 0
+      let factor = 0
 
+      const elements = listRef.current
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i]
+        if (!el) continue
+
+        const rect = el.getBoundingClientRect()
+        const top = rect.top + scrollY
+        const height = rect.height
+        const bottom = top + height
+
+        if (scrollCenter >= top && scrollCenter <= bottom) {
+          activeIdx = i
+          factor = (scrollCenter - top) / height
+          break
+        } else if (scrollCenter < top && i === 0) {
+          activeIdx = 0
+          factor = 0
+          break
+        } else if (scrollCenter > bottom && i === elements.length - 1) {
+          activeIdx = elements.length - 1
+          factor = 1
+          break
+        }
+      }
+
+      // 2. Interpolate dynamic CSS variables based on active scroll section
       let currentBg = themeColors[0].bg
       let currentText = themeColors[0].text
 
@@ -84,77 +106,61 @@ export default function DepthScrollContainer({ children }) {
         currentText = c.text
       }
 
-      // Update root variables
+      // Update root CSS properties
       document.documentElement.style.setProperty('--color-bg', currentBg)
       document.documentElement.style.setProperty('--color-text', currentText)
 
-      // 2. Calculate 3D transforms for each child section
-      listRef.current.forEach((el, index) => {
-        if (!el) return
+      // Derive matching translucent navbar background and border variables dynamically
+      const bgR = parseInt(currentBg.substring(1, 3), 16)
+      const bgG = parseInt(currentBg.substring(3, 5), 16)
+      const bgB = parseInt(currentBg.substring(5, 7), 16)
+      document.documentElement.style.setProperty('--color-navbar-bg', `rgba(${bgR}, ${bgG}, ${bgB}, 0.95)`)
 
-        const relativeOffset = scrollY - index * 1000
+      const textR = parseInt(currentText.substring(1, 3), 16)
+      const textG = parseInt(currentText.substring(3, 5), 16)
+      const textB = parseInt(currentText.substring(5, 7), 16)
+      document.documentElement.style.setProperty('--color-border', `rgba(${textR}, ${textG}, ${textB}, 0.1)`)
 
-        let scale = 1
-        let translateZ = 0
-        let opacity = 1
-        let pointerEvents = 'auto'
-        let visibility = 'visible'
+      // Notify Navbar about the active section index change
+      if (activeIdx !== lastActiveIdx) {
+        lastActiveIdx = activeIdx
+        window.dispatchEvent(new CustomEvent('activeSectionChanged', { detail: activeIdx }))
+      }
 
-        if (relativeOffset > 0) {
-          // Foreground (passed / zooming out)
-          scale = 1 + relativeOffset / 400
-          translateZ = relativeOffset * 1.5
-          opacity = Math.max(0, 1 - relativeOffset / 350)
-          pointerEvents = opacity > 0.05 ? 'auto' : 'none'
-          visibility = opacity > 0 ? 'visible' : 'hidden'
-        } else if (relativeOffset < 0) {
-          // Background (approaching / zooming in)
-          scale = Math.max(0.3, 1 + relativeOffset / 1200)
-          translateZ = relativeOffset * 0.8
-          opacity = Math.max(0, 1 + relativeOffset / 400)
-          pointerEvents = relativeOffset > -150 ? 'auto' : 'none'
-          visibility = opacity > 0 ? 'visible' : 'hidden'
-        }
-
-        // Apply transforms directly via style
-        el.style.transform = `translate3d(0, 0, ${translateZ}px) scale(${scale})`
-        el.style.opacity = opacity
-        el.style.pointerEvents = pointerEvents
-        el.style.visibility = visibility
-      })
+      // 3. Animate 3D Parallax grid background vertically
+      if (gridRef.current) {
+        const gridTranslateY = (scrollY * -0.2) % 80
+        gridRef.current.style.transform = `translate(-50%, -50%) translate3d(0, ${gridTranslateY}px, -200px) rotateX(65deg)`
+      }
 
       ticking = false
     }
 
     window.addEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleScroll)
     // Initial run
     updateTransforms()
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
     }
   }, [flatChildren])
 
   return (
-    <>
-      <div className="depth-container" ref={containerRef}>
-        {flatChildren.map((child, index) => (
-          <div
-            key={index}
-            className="depth-section"
-            ref={(el) => (listRef.current[index] = el)}
-          >
-            <div className="depth-section__content">
-              {child}
-            </div>
-          </div>
-        ))}
-      </div>
-      {/* Dummy scroll area */}
-      <div
-        className="depth-spacer"
-        style={{ height: `${spacerHeight}px` }}
-      />
-    </>
+    <div className="scroll-color-container" ref={containerRef}>
+      {/* Tilting Parallax Grid Backplane */}
+      <div className="depth-grid-bg" ref={gridRef} />
+
+      {flatChildren.map((child, index) => (
+        <div
+          key={index}
+          className="scroll-section"
+          ref={(el) => (listRef.current[index] = el)}
+        >
+          {child}
+        </div>
+      ))}
+    </div>
   )
 }

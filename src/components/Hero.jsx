@@ -79,14 +79,20 @@ export default function Hero() {
         <div className="hero__ctas reveal stagger-4">
           <MagneticButton
             className="btn btn--primary"
-            onClick={() => window.scrollTo({ top: 2000, behavior: 'smooth' })}
+            onClick={() => {
+              const el = document.querySelector('#services')
+              if (el) { const r = el.getBoundingClientRect(); window.scrollTo({ top: r.top + window.scrollY - 80, behavior: 'smooth' }) }
+            }}
           >
             <span>Explore Services</span>
             <span className="btn-arrow">→</span>
           </MagneticButton>
           <MagneticButton
             className="btn btn--light"
-            onClick={() => window.scrollTo({ top: 3000, behavior: 'smooth' })}
+            onClick={() => {
+              const el = document.querySelector('#pricing')
+              if (el) { const r = el.getBoundingClientRect(); window.scrollTo({ top: r.top + window.scrollY - 80, behavior: 'smooth' }) }
+            }}
           >
             <span>View Ratecard</span>
           </MagneticButton>

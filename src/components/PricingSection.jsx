@@ -45,6 +45,7 @@ export function PricingGroup({ group }) {
   return (
     <section
       ref={ref}
+      id={group.id === 'landing' ? 'pricing' : undefined}
       className={`pricing section ${group.dark ? 'section--dark pricing--dark' : ''}`}
     >
       <div className="container">

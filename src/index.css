@@ -541,9 +541,10 @@ input, textarea, select {
 }
 
 .navbar.navbar--scrolled {
-  background-color: rgba(17, 17, 17, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background-color: var(--color-navbar-bg, rgba(17, 17, 17, 0.85));
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
 }
 
 .navbar__logo {
@@ -552,7 +553,7 @@ input, textarea, select {
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-cream);
+  color: var(--color-text);
 }
 
 .navbar__links {
@@ -583,11 +584,19 @@ input, textarea, select {
 }
 
 .navbar__link:hover {
-  color: var(--color-cream);
+  color: var(--color-text);
 }
 
 .navbar__link:hover::after {
   width: 100%;
+}
+
+.navbar__link--active {
+  color: var(--color-accent) !important;
+}
+
+.navbar__link--active::after {
+  width: 100% !important;
 }
 
 .navbar__cta {
@@ -619,7 +628,7 @@ input, textarea, select {
   display: block;
   width: 24px;
   height: 1.5px;
-  background-color: var(--color-cream);
+  background-color: var(--color-text);
   transition: all var(--duration-normal) var(--ease-out);
 }
 
@@ -628,7 +637,8 @@ input, textarea, select {
   position: fixed;
   inset: 0;
   z-index: calc(var(--z-nav) + 10);
-  background-color: var(--color-charcoal);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -636,7 +646,8 @@ input, textarea, select {
   padding: var(--space-xl) var(--gutter);
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--duration-slow) var(--ease-out);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              background-color var(--duration-normal) var(--ease-out);
 }
 
 .mobile-menu.mobile-menu--open {
@@ -661,7 +672,7 @@ input, textarea, select {
   font-size: clamp(36px, 8vw, 64px);
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--color-cream);
+  color: var(--color-text);
   line-height: 1.3;
   opacity: 0;
   transform: translateY(20px);
@@ -677,6 +688,10 @@ input, textarea, select {
 
 .mobile-menu__link:hover {
   color: var(--color-accent);
+}
+
+.mobile-menu__link--active {
+  color: var(--color-accent) !important;
 }
 
 /* --- Hero --- */
@@ -1508,7 +1523,8 @@ input, textarea, select {
 
 .inquiry__option {
   padding: var(--space-md);
-  border: 1.5px solid var(--color-border);
+  border: 1.5px solid rgba(128, 128, 128, 0.3);
+  background-color: transparent;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out);
   text-align: center;
@@ -1517,11 +1533,12 @@ input, textarea, select {
 
 .inquiry__option:hover {
   border-color: var(--color-accent);
+  background-color: rgba(128, 128, 128, 0.05);
 }
 
 .inquiry__option.inquiry__option--selected {
   border-color: var(--color-accent);
-  background-color: rgba(101, 71, 245, 0.06);
+  background-color: rgba(101, 71, 245, 0.1);
   color: var(--color-accent);
 }
 
@@ -2216,85 +2233,51 @@ input, textarea, select {
   color: var(--color-muted);
 }
 
-/* --- Depth Scroll Container & Transitions --- */
+/* --- Smooth Scroll Color Container & Transitions --- */
 html, body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  transition: background-color 0.8s cubic-bezier(0.25, 1, 0.3, 1), color 0.8s cubic-bezier(0.25, 1, 0.3, 1);
+  transition: background-color 0.6s cubic-bezier(0.25, 1, 0.3, 1), color 0.6s cubic-bezier(0.25, 1, 0.3, 1);
 }
 
 section, .pricing-card, .third-party-card, .navbar, .mobile-menu, .inquiry__option, .scope-factor, .scope-calc, .cost-breakdown__chart-card, .cost-breakdown__option-btn {
-  transition: background-color 0.8s cubic-bezier(0.25, 1, 0.3, 1), color 0.8s cubic-bezier(0.25, 1, 0.3, 1), border-color 0.8s cubic-bezier(0.25, 1, 0.3, 1), box-shadow 0.8s cubic-bezier(0.25, 1, 0.3, 1);
+  transition: background-color 0.6s cubic-bezier(0.25, 1, 0.3, 1), color 0.6s cubic-bezier(0.25, 1, 0.3, 1), border-color 0.6s cubic-bezier(0.25, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.25, 1, 0.3, 1);
 }
 
-.depth-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  perspective: 1000px;
-  perspective-origin: 50% 50%;
-  transform-style: preserve-3d;
+.scroll-color-container {
+  position: relative;
+  width: 100%;
   background-color: var(--color-bg);
   color: var(--color-text);
-  z-index: 1;
+  overflow: hidden;
 }
 
-.depth-section {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: transform, opacity;
-}
-
-.depth-section__content {
-  width: 100%;
-  height: 100%;
-  max-height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 80px 0; /* space for fixed navbar */
-  transform-style: preserve-3d;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(101, 71, 245, 0.2) transparent;
-}
-
-/* Hide scrollbar for cleaner design but keep scrollability */
-.depth-section__content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.depth-section__content::-webkit-scrollbar-thumb {
-  background-color: rgba(101, 71, 245, 0.2);
-  border-radius: 3px;
-}
-
-.depth-spacer {
+.scroll-section {
   position: relative;
-  width: 1px;
-  pointer-events: none;
-  z-index: 0;
+  width: 100%;
 }
 
-/* Adjust standard sections to match absolute positioning in depth scroll */
-.hero, .statement, .services, .pricing, .meta-ads, .pixel, .addons, .process, .scope-guard, .terms, .inquiry, .footer {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  padding: 0;
-}
-
-/* Ensure background of fixed container is clean */
+/* Ensure background of hero container is clean */
 .hero__bg {
   z-index: -1;
 }
 
+/* Perspective Grid Background — fixed behind everything */
+.depth-grid-bg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 200vw;
+  height: 200vh;
+  /* Premium radial masking to fade grid boundaries */
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 70%);
+  background-image:
+    linear-gradient(rgba(101, 71, 245, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(101, 71, 245, 0.06) 1px, transparent 1px);
+  background-size: 80px 80px;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.5;
+}
