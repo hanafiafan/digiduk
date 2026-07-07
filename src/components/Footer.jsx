@@ -23,7 +23,7 @@ export default function Footer() {
             className="btn btn--primary"
             onClick={(e) => {
               e.preventDefault()
-              document.querySelector('#inquiry')?.scrollIntoView({ behavior: 'smooth' })
+              window.scrollTo({ top: 15000, behavior: 'smooth' })
             }}
           >
             <span>Start a Project</span>

@@ -31,10 +31,16 @@ export default function Navbar() {
   const handleLinkClick = (e, href) => {
     e.preventDefault()
     setMenuOpen(false)
-    const el = document.querySelector(href)
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
+    const scrollMap = {
+      '#services': 2000,
+      '#pricing': 3000,
+      '#addons': 10000,
+      '#process': 12000,
+      '#inquiry': 15000,
+      '#': 0
     }
+    const targetY = scrollMap[href] ?? 0
+    window.scrollTo({ top: targetY, behavior: 'smooth' })
   }
 
   return (

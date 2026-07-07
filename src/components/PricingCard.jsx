@@ -85,7 +85,7 @@ export default function PricingCard({ pkg, index }) {
         <span className="pricing-card__warranty">{pkg.warranty}</span>
         <button
           className="btn btn--primary btn--small"
-          onClick={() => document.querySelector('#inquiry')?.scrollIntoView({ behavior: 'smooth' })}
+          onClick={() => window.scrollTo({ top: 15000, behavior: 'smooth' })}
         >
           <span>Mulai Proyek</span>
           <span className="btn-arrow">→</span>

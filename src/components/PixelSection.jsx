@@ -119,7 +119,7 @@ export default function PixelSection() {
                   <span className="pricing-card__warranty" />
                   <button
                     className="btn btn--primary btn--small"
-                    onClick={() => document.querySelector('#inquiry')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => window.scrollTo({ top: 15000, behavior: 'smooth' })}
                   >
                     <span>Mulai</span>
                     <span className="btn-arrow">→</span>

@@ -2,7 +2,7 @@ import { landingPagePackages, portfolioPackages, ecommercePackages } from '../da
 import PricingCard from './PricingCard'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 
-const pricingGroups = [
+export const pricingGroups = [
   {
     id: 'landing',
     label: 'A',
@@ -39,7 +39,7 @@ export default function PricingSection() {
   )
 }
 
-function PricingGroup({ group }) {
+export function PricingGroup({ group }) {
   const ref = useScrollReveal()
 
   return (

@@ -79,14 +79,14 @@ export default function Hero() {
         <div className="hero__ctas reveal stagger-4">
           <MagneticButton
             className="btn btn--primary"
-            onClick={() => document.querySelector('#services')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => window.scrollTo({ top: 2000, behavior: 'smooth' })}
           >
             <span>Explore Services</span>
             <span className="btn-arrow">→</span>
           </MagneticButton>
           <MagneticButton
             className="btn btn--light"
-            onClick={() => document.querySelector('#pricing')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => window.scrollTo({ top: 3000, behavior: 'smooth' })}
           >
             <span>View Ratecard</span>
           </MagneticButton>
